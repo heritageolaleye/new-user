@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 read -p "Please enter your username: " username
 
@@ -29,6 +29,9 @@ do
   	else
    		#Passwd is strong;
        		echo "Strong password detected! User $username created successfully!"
+
+		# Echo the password twice to the passwd cmd as it require you to re-enter the command
+		echo -e "$password\n$password" | sudo passwd $username;
 	 	exit;
 	fi;
 done;
