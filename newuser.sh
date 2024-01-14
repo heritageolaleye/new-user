@@ -1,37 +1,42 @@
-#! /bin/bash
+#!/bin/bash
 
-read -p "please enter your username" username
+read -p "Please enter your username: " username
 
 # Add a new user
-
 sudo useradd -m -s /bin/sh $username
 
-read -s -p "please enter your password. password must have at least 8 characters" password
-
-# password must have at least 8 characters.
-
-if [ ${#password} -lt 8 ]; then
-
-	sudo userdel -r $username
-
+ntries=0;
+# Add long a $ntries is less than 3 keep on
+while [[ $ntries -lt 3 ]];
+do
+	read -s -p "Please enter your password: " password
 	
-fi
+	if [ ${#password} -lt 8 ]; then
+ 		# Password must have at least 8 characters.
+		echo "password must have at least 8 characters";
+  		let ntries++;
+  
+	elif [[ ! $password =~ [A-Z] ]]; then
+ 		#Password must contain uppercase
+		echo "password must contain an uppercase letter";
+  		let ntries++;
+    
+	elif [[ ! $password =~ [0-9] ]]; then
+ 		#Password must have at least one digit
+		echo "password must have a digit number";
+  		let ntries++;
+  
+  	else
+   		#Passwd is strong;
+       		echo "Strong password detected! User $username created successfully!"
 
-#password must contain uppercase
+		# Echo the password twice to the passwd cmd as it require you to re-enter the command
+		echo -e "$password\n$password" | sudo passwd $username;
+	 	exit;
+	fi;
+done;
 
-if [[ ! $password =~ [A-Z] ]]; then
-	echo "password must contain an uppercase letter"
-	sudo userdel -r $username
-	
-
-fi
-
-#password must have at least one digit
-
-if [[ ! $password =~ [0-9] ]]; then
-	echo "password must have a digit number"
-	sudo userdel -r $username
-	
-fi
-
+# Delete the user
+sudo userdel -r $username
+echo "Deleted user $username! Too many password tries (Weak Password Detected)"
 
